@@ -219,14 +219,15 @@ input[type=range]{width:100%;accent-color:var(--brand)}
   .wiz-layout{gap:14px}
 
   /* kompaktowy podgląd — formularz dostępny po 1 swipe */
-  .preview-pane{position:static;gap:6px}
-  .preview-stage{padding:8px}
+  .preview-pane{position:static;gap:8px;margin-bottom:10px}
+  .preview-stage{padding:10px}
   #previewCanvas{height:190px;width:auto;max-width:100%}
   .preview-state{top:12px;right:12px;font-size:.68rem;padding:3px 9px}
   .state-row{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
   .state-row::-webkit-scrollbar{display:none}
   .state-row button{flex:none;padding:5px 10px;font-size:.74rem}
   .preview-pane>.muted.small{display:none}
+  .wiz-steps{margin-top:4px}
 
   /* kroki — ciaśniejsze */
   .wiz-steps{padding:16px 14px}

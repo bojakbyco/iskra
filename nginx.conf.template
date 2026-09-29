@@ -10,6 +10,8 @@ server {
     }
 
     location / {
+        # HTML zawsze świeży (niesie wersje ?v= zasobów)
+        add_header Cache-Control "no-cache";
         try_files $uri $uri/ /index.html;
     }
 
