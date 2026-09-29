@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Iskra — twórz żywych asystentów AI</title>
+<meta name="description" content="Iskra: kreator wirtualnego asystenta AI z animowaną postacią, regułami działania i studiem AI-wideo z przezroczystym tłem.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23ff7a1a'/><circle cx='38' cy='45' r='6' fill='%23fff'/><circle cx='62' cy='45' r='6' fill='%23fff'/><circle cx='38' cy='47' r='3' fill='%23222'/><circle cx='62' cy='47' r='3' fill='%23222'/><path d='M38 62 q12 10 24 0' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round'/></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand" id="brandBtn" role="button" tabindex="0">
+    <span class="brand-dot" aria-hidden="true"></span>
+    <span class="brand-name">Iskra</span>
+  </div>
+  <nav class="topnav" id="topnav">
+    <button data-view="create" class="nav-btn active">Kreator</button>
+    <button data-view="chat" class="nav-btn">Rozmowa</button>
+    <button data-view="activity" class="nav-btn">Aktywność</button>
+    <button data-view="studio" class="nav-btn">Studio AI</button>
+  </nav>
+  <div class="top-actions">
+    <button id="saveBtn" class="ghost-btn" title="Zapisz postać">💾</button>
+    <button id="menuBtn" class="ghost-btn menu-btn" title="Menu" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Menu boczne">
+  <div class="drawer-head">
+    <span class="brand-name">Iskra</span>
+    <button class="ghost-btn" id="drawerClose" aria-label="Zamknij">✕</button>
+  </div>
+  <nav class="drawer-nav">
+    <button data-view="create" class="nav-btn active">Kreator</button>
+    <button data-view="chat" class="nav-btn">Rozmowa</button>
+    <button data-view="activity" class="nav-btn">Aktywność</button>
+    <button data-view="studio" class="nav-btn">Studio AI</button>
+  </nav>
+  <div class="drawer-section">
+    <h4>Postacie</h4>
+    <div id="savedList" class="saved-list"></div>
+    <div class="drawer-row">
+      <button id="importBtn" class="ghost-btn w100">📥 Import JSON</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+  </div>
+  <div class="drawer-section">
+    <h4>O projekcie</h4>
+    <p class="muted small">Iskra to niezależny, otwarty kreator asystentów — hołd dla koncepcji „dots” z OpenAI DevDay 2026, rozbudowany o AI-wideo z przezroczystym tłem.</p>
+  </div>
+</aside>
+
+<main id="app">
+
+  <!-- ===================== KREATOR ===================== -->
+  <section id="view-create" class="view active">
+    <div class="wiz-head">
+      <h1>Stwórz swoją Iskrę</h1>
+      <p class="muted">Zawsze dostępny asystent, który poznaje Twój styl pracy. Nadaj mu tożsamość, wygląd, umysły i granice.</p>
+    </div>
+
+    <div class="wiz-layout">
+      <!-- podglad na zywo -->
+      <aside class="preview-pane" id="previewPane">
+        <div class="preview-stage">
+          <canvas id="previewCanvas" width="360" height="420" aria-label="Podgląd postaci"></canvas>
+          <div class="preview-state" id="previewState">idle</div>
+        </div>
+        <div class="state-row" id="stateRow">
+          <button data-state="idle" class="active">😌 idle</button>
+          <button data-state="listen">👂 słucha</button>
+          <button data-state="think">💭 myśli</button>
+          <button data-state="speak">💬 mówi</button>
+          <button data-state="work">⚙️ pracuje</button>
+          <button data-state="sleep">😴 śpi</button>
+          <button data-state="party">🎉 świętuje</button>
+        </div>
+        <p class="muted small center">Postać reaguje na kursor — najedź na podgląd.</p>
+      </aside>
+
+      <div class="wiz-steps">
+        <ol class="stepper" id="stepper">
+          <li data-step="1" class="active"><span class="step-dot">1</span> Tożsamość</li>
+          <li data-step="2"><span class="step-dot">2</span> Wygląd</li>
+          <li data-step="3"><span class="step-dot">3</span> Osobowość</li>
+          <li data-step="4"><span class="step-dot">4</span> Reguły</li>
+        </ol>
+
+        <!-- KROK 1 -->
+        <div class="step-panel" data-step="1">
+          <label class="fld">
+            <span>Imię Twojej iskry</span>
+            <input type="text" id="f_name" maxlength="24" placeholder="np. Alfred, Nocka, Błysk…" autocomplete="off">
+          </label>
+          <label class="fld">
+            <span>Czym ma się zajmować? (rola)</span>
+            <textarea id="f_role" rows="3" maxlength="280" placeholder="np. Pilnuje moich deadline'ów, zbiera newsy z branży i przygotowuje podsumowania rankiem."></textarea>
+          </label>
+          <label class="fld">
+            <span>Jak ma się przedstawiać?</span>
+            <input type="text" id="f_intro" maxlength="140" placeholder="np. Twój poranny zwiadowca informacji.">
+          </label>
+          <div class="hint muted small">W fieldzie roli użyj czasowników: monitoruje, zbiera, przygotowuje, przypomina — iskra zrobi z tego swoje zadania.</div>
+        </div>
+
+        <!-- KROK 2 -->
+        <div class="step-panel" data-step="2" hidden>
+          <div class="fld"><span>Kolor bazowy</span>
+            <div class="swatches" id="swatches"></div>
+          </div>
+          <div class="grid2">
+            <label class="fld"><span>Kształt</span>
+              <select id="f_shape">
+                <option value="circle">Kula (klasyczny dot)</option>
+                <option value="blob">Blob (żywa plazma)</option>
+                <option value="squircle">Squircle (miękki kwadrat)</option>
+                <option value="star">Gwiazdka</option>
+              </select>
+            </label>
+            <label class="fld"><span>Oczy</span>
+              <select id="f_eyes">
+                <option value="dot">Punkty (klasyka)</option>
+                <option value="oval">Owalne (ciekawskie)</option>
+                <option value="happy">Wesołe łuki</option>
+                <option value="visor">Wizor (robot)</option>
+              </select>
+            </label>
+            <label class="fld"><span>Akcesorium</span>
+              <select id="f_acc">
+                <option value="none">Brak</option>
+                <option value="halo">Aureola</option>
+                <option value="antenna">Antenka</option>
+                <option value="headphones">Słuchawki</option>
+                <option value="glasses">Okulary</option>
+                <option value="bow">Mucha</option>
+              </select>
+            </label>
+            <label class="fld"><span>Aura (cząsteczki)</span>
+              <select id="f_aura">
+                <option value="none">Brak</option>
+                <option value="sparks" selected>Iskry</option>
+                <option value="orbit">Orbitujące punkty</option>
+                <option value="bubbles">Bąbelki</option>
+              </select>
+            </label>
+          </div>
+          <label class="fld"><span>Rozmiar <b id="sizeVal">100</b>%</span>
+            <input type="range" id="f_size" min="60" max="140" value="100">
+          </label>
+          <label class="check"><input type="checkbox" id="f_pet"><span>🧡 Towarzysz (pet) — małe zwierzątko krążące wokół iskry</span></label>
+        </div>
+
+        <!-- KROK 3 -->
+        <div class="step-panel" data-step="3" hidden>
+          <div class="fld"><span>Osobowość</span>
+            <div class="sliders">
+              <label>Proaktywność <input type="range" id="p_proactive" min="0" max="100" value="60"><b id="v_proactive">60</b></label>
+              <label>Poczucie humoru <input type="range" id="p_humor" min="0" max="100" value="40"><b id="v_humor">40</b></label>
+              <label>Formalność <input type="range" id="p_formal" min="0" max="100" value="30"><b id="v_formal">30</b></label>
+              <label>Zwięzłość <input type="range" id="p_terse" min="0" max="100" value="50"><b id="v_terse">50</b></label>
+            </div>
+          </div>
+          <div class="fld"><span>Umiejętności (wybierz, czym iskra będzie żyć)</span>
+            <div class="chips" id="skillChips"></div>
+          </div>
+          <div class="fld"><span>Pierwszy cel na start</span>
+            <input type="text" id="f_goal" maxlength="140" placeholder="np. Codziennie o 8:00 przeglądaj nowe zgłoszenia i rób podsumowanie.">
+          </div>
+        </div>
+
+        <!-- KROK 4 -->
+        <div class="step-panel" data-step="4" hidden>
+          <p class="muted small">Jak w prawdziwych agentach: zdecyduj, co iskra robi sama, a co wymaga Twojej zgody. W rozmowie zobaczysz karty zatwierdzeń.</p>
+          <div id="rulesList" class="rules"></div>
+          <button class="ghost-btn" id="addRuleBtn">＋ Dodaj własną regułę</button>
+        </div>
+
+        <div class="wiz-nav">
+          <button class="ghost-btn" id="prevBtn">‹ Wstecz</button>
+          <div class="wiz-nav-right">
+            <button class="primary-btn" id="nextBtn">Dalej ›</button>
+            <button class="primary-btn cta" id="finishBtn" hidden>✨ Ożyw iskrę</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CZAT ===================== -->
+  <section id="view-chat" class="view" hidden>
+    <div class="chat-layout">
+      <aside class="chat-side">
+        <div class="mini-stage"><canvas id="chatCanvas" width="240" height="240"></canvas></div>
+        <div class="chat-ident">
+          <h2 id="chatName">—</h2>
+          <p class="muted small" id="chatRole">—</p>
+        </div>
+        <div class="pill-row" id="chatSkills"></div>
+      </aside>
+      <div class="chat-main">
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="sugg-row" id="suggRow"></div>
+        <form class="chat-input" id="chatForm">
+          <input type="text" id="chatText" placeholder="Napisz do swojej iskry…" autocomplete="off" maxlength="500">
+          <button class="primary-btn" type="submit" aria-label="Wyślij">➤</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== AKTYWNOŚĆ ===================== -->
+  <section id="view-activity" class="view" hidden>
+    <div class="act-head">
+      <h2>Aktywność iskry</h2>
+      <div class="act-controls">
+        <button class="ghost-btn" id="pauseBtn">⏸ Pauza</button>
+        <button class="ghost-btn" id="wakeBtn">🔄 Wygeneruj zdarzenia</button>
+      </div>
+    </div>
+    <div class="act-cols" id="actCols">
+      <div class="act-col" data-col="progress"><h3>⏳ W toku</h3><div class="act-list"></div></div>
+      <div class="act-col" data-col="scheduled"><h3>🗓 Zaplanowane</h3><div class="act-list"></div></div>
+      <div class="act-col" data-col="done"><h3>✅ Zakończone</h3><div class="act-list"></div></div>
+    </div>
+    <p class="muted small center pad">Symulacja pulsującego agenta — tak jak widok aktywności dota: zadania płyną między kolumnami, a Ty decydujesz, co approve'ować.</p>
+  </section>
+
+  <!-- ===================== STUDIO AI ===================== -->
+  <section id="view-studio" class="view" hidden>
+    <div class="studio-layout">
+      <div class="studio-left">
+        <h2>Studio AI-wideo</h2>
+        <p class="muted small">Wygeneruj klatki postaci modelem AI (Pollinations / FLUX, bez klucza), zdejmij tło chroma-key i zbuduj animowane <b>przezroczyste wideo WebM</b> albo sprite-sheet PNG.</p>
+
+        <label class="fld"><span>Opis sceny / pozy</span>
+          <textarea id="s_prompt" rows="3" placeholder="np. rudy lis maskotka, tańczy i klaszcze, styl sticker 3D render">rudy lis maskotka, buzia wesoła, faluje łapkami, styl sticker 3D render</textarea>
+        </label>
+        <div class="grid2">
+          <label class="fld"><span>Liczba klatek: <b id="s_framesVal">6</b></span>
+            <input type="range" id="s_frames" min="2" max="12" value="6">
+          </label>
+          <label class="fld"><span>Styl tła do klucza</span>
+            <select id="s_bg">
+              <option value="#00FF00">Zieleń (green screen)</option>
+              <option value="#FF00FF">Magenta</option>
+              <option value="#0000FF">Niebieski</option>
+            </select>
+          </label>
+        </div>
+        <label class="fld"><span>Podobieństwo między klatkami (seed drift): <b id="s_driftVal">2</b></span>
+          <input type="range" id="s_drift" min="0" max="8" value="2">
+        </label>
+        <button class="primary-btn w100" id="genBtn">🎬 Generuj klatki AI</button>
+        <div class="gen-progress" id="genProgress" hidden>
+          <div class="bar"><div class="bar-fill" id="genBar"></div></div>
+          <span class="small muted" id="genInfo">0/0</span>
+        </div>
+
+        <div class="studio-opts" id="studioOpts" hidden>
+          <div class="grid2">
+            <label class="fld"><span>FPS: <b id="s_fpsVal">8</b></span>
+              <input type="range" id="s_fps" min="2" max="24" value="8">
+            </label>
+            <label class="fld"><span>Tryb</span>
+              <select id="s_mode">
+                <option value="loop">Pętla</option>
+                <option value="pingpong">Ping-pong</option>
+                <option value="once">Jednorazowo</option>
+              </select>
+            </label>
+          </div>
+          <label class="fld"><span>Progi chroma-key</span>
+            <div class="sliders">
+              <label>Tolerancja <input type="range" id="s_tol" min="20" max="200" value="90"><b id="v_tol">90</b></label>
+              <label>Miękkość <input type="range" id="s_soft" min="0" max="120" value="40"><b id="v_soft">40</b></label>
+            </div>
+          </label>
+          <label class="check"><input type="checkbox" id="s_despill" checked><span>Despill — wygładz poświatę klucza na krawędziach</span></label>
+          <div class="btn-row">
+            <button class="primary-btn" id="exportWebmBtn">🎥 Eksport WebM (alpha)</button>
+            <button class="ghost-btn" id="exportPngBtn">🖼 Sprite-sheet PNG</button>
+          </div>
+          <p class="muted small">WebM z kanałem alpha: Chrome/Edge zapisują przezroczystość (VP9). Firefox/Safari mogą nagrać tło czarne — wtedy użyj sprite PNG.</p>
+        </div>
+      </div>
+      <div class="studio-right">
+        <div class="checkStrip" hidden id="checkStrip"><span class="muted small">tło: szachownica = przezroczystość</span></div>
+        <canvas id="studioCanvas" width="480" height="480"></canvas>
+        <div class="frame-strip" id="frameStrip"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot muted small">
+  Iskra · niezależny projekt inspirowany koncepcją „dots” (OpenAI DevDay 2026). Klatki AI: Pollinations. Nie jest powiązany z OpenAI.
+</footer>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script src="js/dot.js"></script>
+<script src="js/brain.js"></script>
+<script src="js/studio.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
