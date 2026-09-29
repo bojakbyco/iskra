@@ -210,3 +210,66 @@ input[type=range]{width:100%;accent-color:var(--brand)}
   .chat-layout{grid-template-columns:260px 1fr}
   .chat-log{max-height:62vh}
 }
+
+/* ============ MOBILE (telefony) ============ */
+@media(max-width:719px){
+  main{padding:12px 12px 36px}
+  .topbar{padding:8px 10px;gap:8px}
+  .wiz-head{margin:4px auto 14px}
+  .wiz-layout{gap:14px}
+
+  /* kompaktowy podgląd — formularz dostępny po 1 swipe */
+  .preview-pane{position:static;gap:6px}
+  .preview-stage{padding:8px}
+  #previewCanvas{height:190px;width:auto;max-width:100%}
+  .preview-state{top:12px;right:12px;font-size:.68rem;padding:3px 9px}
+  .state-row{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  .state-row::-webkit-scrollbar{display:none}
+  .state-row button{flex:none;padding:5px 10px;font-size:.74rem}
+  .preview-pane>.muted.small{display:none}
+
+  /* kroki — ciaśniejsze */
+  .wiz-steps{padding:16px 14px}
+  .stepper{margin-bottom:14px;gap:2px}
+  .stepper li{padding:4px 8px 4px 4px;font-size:.76rem}
+  .step-dot{width:22px;height:22px;font-size:.72rem}
+  .fld{gap:5px;font-size:.88rem}
+  input[type=text],textarea,select{padding:10px 11px;font-size:16px} /* 16px = brak auto-zoomu iOS */
+  .grid2{gap:10px}
+  .swatches{gap:6px}
+  .sliders{padding:11px;gap:10px}
+  .wiz-nav{margin-top:18px}
+  .primary-btn{padding:12px 18px}
+  .gallery{grid-template-columns:repeat(3,1fr);gap:8px}
+  .char-card{padding:8px 4px 6px;border-radius:12px}
+  .char-card img{width:100%;height:auto;aspect-ratio:22/25;object-fit:contain}
+  .char-card .cb{font-size:.62rem}
+
+  /* czat — pełna wysokość ekranu, log wypełnia, input na dole */
+  .chat-layout{display:flex;flex-direction:column;min-height:calc(100dvh - 120px);gap:10px}
+  .chat-side{flex-direction:row;align-items:center;gap:10px;width:100%;padding-top:0}
+  .mini-stage{padding:4px;border-radius:12px}
+  #chatCanvas{height:84px;width:auto}
+  .chat-ident{text-align:left;max-width:none;flex:1}
+  .chat-ident h2{font-size:1.05rem}
+  .pill-row{justify-content:flex-start}
+  .chat-main{flex:1;min-height:0;gap:8px}
+  .chat-log{flex:1;min-height:0;max-height:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .chat-input{padding-bottom:max(2px,env(safe-area-inset-bottom))}
+  .sugg-row{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .sugg-row::-webkit-scrollbar{display:none}
+  .sugg{flex:none}
+  .msg{max-width:92%}
+
+  /* aktywność — karuzela swipe zamiek stacku */
+  .act-cols{display:grid;grid-auto-flow:column;grid-auto-columns:min(86%,340px);overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding-bottom:6px;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .act-col{scroll-snap-align:start}
+  .act-head{margin-bottom:12px}
+
+  /* studio — podgląd nad formularzem */
+  .studio-layout{gap:14px}
+  .studio-right{order:-1}
+  #studioCanvas{width:100%;height:auto}
+  .studio-left{padding:16px 14px}
+  .frame-strip{max-width:100%}
+}
