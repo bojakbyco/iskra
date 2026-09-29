@@ -42,8 +42,58 @@ function showView(v){
 function openDrawer(){ $('#drawer').classList.add('open'); $('#drawerBackdrop').hidden=false; }
 function closeDrawer(){ $('#drawer').classList.remove('open'); $('#drawerBackdrop').hidden=true; }
 
-/* ---------- kreator ---------- */
+function selectPreset(i){
+  const p=PRESETS[i];
+  Object.assign(persona, p.persona, {
+    color:p.color, shape:p.shape, eyes:p.eyes, acc:p.acc, aura:p.aura, pet:p.pet, size:p.size
+  });
+  // sugeruj imię tylko gdy pole puste lub poprzednio z presetu
+  const nm=$('#f_name');
+  if(!nm.dataset.touched || nm.dataset.fromPreset==='1'){
+    nm.value=p.name; persona.name=p.name; nm.dataset.fromPreset='1';
+  }
+  applyPersonaToUI(); applyPreview();
+  [...$('#charGallery').children].forEach((c,j)=>c.classList.toggle('sel', j===i));
+  toast(`Wybrano ${p.name} — dopasuj szczegóły niżej albo idź dalej.`);
+}
+
+// === kreator ===
 function initWizard(){
+  // === GALERIA POSTACI ===
+  const gallery=$('#charGallery');
+  PRESETS.forEach((p,i)=>{
+    const card=document.createElement('button');
+    card.type='button'; card.className='char-card'; card.dataset.i=i;
+    const thumb=renderThumb(p, 132, 150);
+    card.innerHTML=`<img src="${thumb}" alt="${p.name}"><span class="cn">${p.name}</span><span class="cb">${p.bio}</span>`;
+    card.addEventListener('click',()=>selectPreset(i));
+    gallery.appendChild(card);
+  });
+
+  // generator z opisu
+  $('#describeBtn').addEventListener('click',()=>{
+    const txt=$('#f_describe').value.trim();
+    if(!txt){ toast('Najpierw opisz postać — choćby kilka słów.', true); return; }
+    const cfg=describeToConfig(txt);
+    const box=$('#describeResult');
+    box.innerHTML='';
+    const card=document.createElement('button');
+    card.type='button'; card.className='char-card sel';
+    card.innerHTML=`<img src="${renderThumb(cfg)}" alt="propozycja"><span class="cn">Twoja propozycja</span><span class="cb">z Twojego opisu</span>`;
+    card.addEventListener('click',()=>{
+      Object.assign(persona, cfg);
+      applyPersonaToUI(); applyPreview();
+      [...gallery.children].forEach(c=>c.classList.remove('sel'));
+      card.classList.add('sel');
+      toast('Propozycja załadowana do kreatora.');
+    });
+    box.appendChild(card);
+    box.hidden=false;
+    Object.assign(persona, cfg);
+    applyPersonaToUI(); applyPreview();
+    toast('Stworzyłem propozycję z opisu — kliknij, by załadować, lub dopasuj niżej.');
+  });
+
   // swatches
   const sw=$('#swatches');
   PALETTE.forEach(col=>{
@@ -93,6 +143,7 @@ function initWizard(){
     el.addEventListener('input',()=>{ persona[key]=el.value; });
   };
   bindField('#f_name','name'); bindField('#f_role','role');
+  $('#f_name').addEventListener('input',e=>{ e.target.dataset.touched='1'; });
   bindField('#f_intro','intro'); bindField('#f_goal','goal');
 
   // wygląd
